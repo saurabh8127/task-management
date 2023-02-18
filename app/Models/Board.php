@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Task extends Model
+class Board extends Model
 {
     use HasFactory;
-    protected $fillable = ['board_id', 'task'];
+    protected $fillable = ['name', 'created_by'];
 
     public $timestamps = [
         'created_at' => 'CURRENT_TIMESTAMP',

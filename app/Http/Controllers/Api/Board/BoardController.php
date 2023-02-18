@@ -1,30 +1,30 @@
 <?php
 
-namespace App\Http\Controllers\Api\Task;
+namespace App\Http\Controllers\Api\Board;
 
 use App\Http\Controllers\Controller;
-use App\Models\Task;
-use App\Repositories\TaskRepository;
+use App\Models\Board;
+use App\Repositories\BoardRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class TaskController extends Controller
+class BoardController extends Controller
 {
-
-    protected $task;
-    public function __construct(TaskRepository $task)
+    protected $board;
+    public function __construct(BoardRepository $board)
     {
-        $this->task = $task;
+        $this->board = $board;
     }
 
-    public function getTask(Request $request)
+    //get data
+    public function getData(Request $request)
     {
         $user = Auth::guard('api')->user();
         if (!empty($user)) {
-            $task_data = Task::where('board_id', $request->board_id)->get();
+            $board_data = Board::where('created_by', $user->id)->get();
             return response()->json([
-                'data' => $task_data,
+                'data' => $board_data,
                 'status' => true,
                 'message' => 'Data get successfully.',
             ], 200);
@@ -41,24 +41,27 @@ class TaskController extends Controller
     {
 
         $user = Auth::guard('api')->user();
-        $data = $request->all();
         //validate value
         $validated = Validator::make($request->all(), [
-            'task' => 'required|string',
-            'board_id' => 'required|integer',
+            'name' => 'required|string',
         ]);
         if ($validated->fails()) {
             return response()->json([
                 'data' => [],
                 'status' => false,
-                'message' => 'Enter valid data.',
+                'message' => 'Eter valid data.',
             ], 400);
         } else {
 
-            $task_data = $this->task->addTask($data);
+            $data = [
+                'name' => $request->name,
+                'created_by' => $user->id,
+            ];
+
+            $board_data = $this->board->addBoard($data);
 
             return response()->json([
-                'data' => $task_data,
+                'data' => $board_data,
                 'status' => true,
                 'message' => 'Task added successfully.',
             ], 200);
@@ -70,16 +73,16 @@ class TaskController extends Controller
     {
         $data = $request->all();
         $validated = Validator::make($request->all(), [
-            'task_id' => 'required|integer',
+            'board_id' => 'required|integer',
         ]);
         if ($validated->fails()) {
             return response()->json([
-                'data' => array(),
+                'data' => [],
                 'status' => false,
                 'message' => 'Task data not found. ',
             ], 400);
         } else {
-            $this->task->deleteTask($data);
+            $this->board->deleteBoard($data);
             return response()->json([
                 'data' => " ",
                 'status' => true,
@@ -91,11 +94,11 @@ class TaskController extends Controller
     //edit task
     public function edit(Request $request)
     {
-        $data = $request->all();
+        $user = Auth::guard('api')->user();
+
         $validated = Validator::make($request->all(), [
-            'task_id' => 'required|integer',
-            'task' => 'required|string',
             'board_id' => 'required|integer',
+            'name' => 'required|string',
         ]);
 
         if ($validated->fails()) {
@@ -104,23 +107,37 @@ class TaskController extends Controller
                 'status' => false,
                 'massage' => 'Enter valid value',
             ], 400);
-        } else {
-            $task_data = $this->task->editTask($data);
-
-            if (!empty($task_data)) {
-                return response()->json([
-                    'data' => $task_data,
-                    'status' => true,
-                    'message' => 'Data update successfully.',
-                ], 200);
-            } else {
-                return response()->json([
-                    'data' => $task_data,
-                    'status' => true,
-                    'message' => 'Data not found.',
-                ], 404);
-            }
         }
-    }
 
+        // if user has not created board
+        if (!$this->board->checkUserHasBoard($request->board_id)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data Not Found OR Unauthorized Access!',
+            ], 401);
+
+        }
+
+        $data = [
+            'board_id' => $request->board_id,
+            'name' => $request->name,
+            'created_by' => $user->id,
+        ];
+        $board_data = $this->board->editBoard($data);
+
+        if (!empty($board_data)) {
+            return response()->json([
+                'data' => $board_data,
+                'status' => true,
+                'message' => 'Data update successfully.',
+            ], 200);
+        } else {
+            return response()->json([
+                'data' => $board_data,
+                'status' => true,
+                'message' => 'Data not found.',
+            ], 404);
+        }
+
+    }
 }
