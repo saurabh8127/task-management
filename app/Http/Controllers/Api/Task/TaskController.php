@@ -20,7 +20,6 @@ class TaskController extends Controller
 
     public function getTask(Request $request)
     {
-        $user = Auth::guard('api')->user();
         $task_data = Task::where('board_id', $request->board_id)->get();
 
         if (!count($task_data) == 0) {
@@ -37,7 +36,7 @@ class TaskController extends Controller
             ], 404);
         }
     }
-    //create task
+    //Create task
     public function create(Request $request)
     {
 
@@ -56,7 +55,7 @@ class TaskController extends Controller
                 'message' => 'Enter valid data.',
             ], 400);
         } else {
-
+            //Create Task Repository
             $task_data = $this->task->addTask($data);
 
             return response()->json([
@@ -67,7 +66,7 @@ class TaskController extends Controller
         }
     }
 
-    //delete task
+    //Delete task
     public function delete(Request $request)
     {
         $data = $request->all();
@@ -81,6 +80,7 @@ class TaskController extends Controller
                 'message' => 'Task data not found. ',
             ], 400);
         } else {
+            //Delete Task Repository
             $this->task->deleteTask($data);
             return response()->json([
                 'data' => '',
@@ -90,7 +90,7 @@ class TaskController extends Controller
         }
     }
 
-    //edit task
+    //Edit task
     public function edit(Request $request)
     {
         $data = $request->all();
@@ -108,6 +108,7 @@ class TaskController extends Controller
                 'massage' => 'Enter valid value',
             ], 400);
         } else {
+            //Edit Task Repository
             $task_data = $this->task->editTask($data);
 
             if (!empty($task_data)) {

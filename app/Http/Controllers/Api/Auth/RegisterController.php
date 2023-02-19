@@ -18,17 +18,32 @@ class RegisterController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->sendError('Validation Error.', $validator->errors());
+            return response()->json([
+                'data' => $validator->errors()->all(),
+                'status' => false,
+                'message' => 'Enter valid value',
+            ], 400);
+        }
+        $user = User::where('email', $request->email)->first();
+
+        if (empty($user)) {
+            $input = $request->all();
+            $input['password'] = bcrypt($input['password']);
+            //user create
+            $user = User::create($input);
+            //create token
+            $success['token'] = $user->createToken('Api token')->accessToken;
+            return response()->json([
+                'data' => $success,
+                'status' => true,
+                'message' => 'login, welcome',
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'Already login',
+            ], 200);
         }
 
-        $input = $request->all();
-        $input['password'] = bcrypt($input['password']);
-        $user = User::create($input);
-
-        return response()->json([
-            'data' => $user,
-            'status' => true,
-            'message' => 'login, welcome',
-        ], 200);
     }
 }

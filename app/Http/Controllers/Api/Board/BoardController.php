@@ -36,7 +36,7 @@ class BoardController extends Controller
             ], 404);
         }
     }
-    //create task
+    //Create board
     public function create(Request $request)
     {
 
@@ -60,7 +60,7 @@ class BoardController extends Controller
                 'member' => $request->member,
                 'created_by' => $user->id,
             ];
-
+            //Create Board Repository
             $board_data = $this->board->addBoard($data);
 
             return response()->json([
@@ -71,7 +71,7 @@ class BoardController extends Controller
         }
     }
 
-    //delete task
+    //Delete board
     public function delete(Request $request)
     {
         $data = $request->all();
@@ -85,6 +85,7 @@ class BoardController extends Controller
                 'message' => 'Task data not found. ',
             ], 400);
         } else {
+            //Delete Board Repository
             $this->board->deleteBoard($data);
             return response()->json([
                 'data' => '',
@@ -129,6 +130,8 @@ class BoardController extends Controller
             'member' => $request->member,
             'created_by' => $user->id,
         ];
+
+        //Edit Board Repository
         $board_data = $this->board->editBoard($data);
 
         if (!empty($board_data)) {
