@@ -25,6 +25,7 @@ class TaskRepository
         if (!empty($task_data)) {
 
             $task_data->task = $data['task'];
+            $task_data->description = $data['description'];
             $task_data->board_id = $data['board_id'];
 
             $task_data->update();

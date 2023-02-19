@@ -16,6 +16,9 @@ return new class extends Migration
         Schema::create('boards', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('description');
+            $table->bigInteger('member')->nullable();
+            $table->bigInteger('number_of_task_allowed')->nullable();
             $table->unsignedBigInteger('created_by');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();

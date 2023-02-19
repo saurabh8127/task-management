@@ -30,7 +30,7 @@ class BoardController extends Controller
             ], 200);
         } else {
             return response()->json([
-                'data' => [],
+                'data' => '',
                 'status' => true,
                 'message' => 'Data not found.',
             ], 404);
@@ -44,10 +44,11 @@ class BoardController extends Controller
         //validate value
         $validated = Validator::make($request->all(), [
             'name' => 'required|string',
+            'description' => 'required|string',
         ]);
         if ($validated->fails()) {
             return response()->json([
-                'data' => [],
+                'data' => '',
                 'status' => false,
                 'message' => 'Eter valid data.',
             ], 400);
@@ -55,6 +56,8 @@ class BoardController extends Controller
 
             $data = [
                 'name' => $request->name,
+                'description' => $request->description,
+                'member' => $request->member,
                 'created_by' => $user->id,
             ];
 
@@ -77,14 +80,14 @@ class BoardController extends Controller
         ]);
         if ($validated->fails()) {
             return response()->json([
-                'data' => [],
+                'data' => '',
                 'status' => false,
                 'message' => 'Task data not found. ',
             ], 400);
         } else {
             $this->board->deleteBoard($data);
             return response()->json([
-                'data' => " ",
+                'data' => '',
                 'status' => true,
                 'message' => 'Data deleted successfully.',
             ], 200);
@@ -99,6 +102,7 @@ class BoardController extends Controller
         $validated = Validator::make($request->all(), [
             'board_id' => 'required|integer',
             'name' => 'required|string',
+            'description' => 'required|string',
         ]);
 
         if ($validated->fails()) {
@@ -121,6 +125,8 @@ class BoardController extends Controller
         $data = [
             'board_id' => $request->board_id,
             'name' => $request->name,
+            'description' => $request->description,
+            'member' => $request->member,
             'created_by' => $user->id,
         ];
         $board_data = $this->board->editBoard($data);
@@ -133,7 +139,7 @@ class BoardController extends Controller
             ], 200);
         } else {
             return response()->json([
-                'data' => $board_data,
+                'data' => '',
                 'status' => true,
                 'message' => 'Data not found.',
             ], 404);

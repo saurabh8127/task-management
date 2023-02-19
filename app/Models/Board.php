@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Board extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'created_by'];
+    protected $fillable = ['name', 'description', 'member', 'number_of_task_allowed', 'created_by'];
 
     public $timestamps = [
         'created_at' => 'CURRENT_TIMESTAMP',

@@ -25,6 +25,8 @@ class BoardRepository
         if (!empty($board_data)) {
 
             $board_data->name = $data['name'];
+            $board_data->description = $data['description'];
+            $board_data->member = $data['member'];
             $board_data->created_by = $data['created_by'];
 
             $board_data->update();

@@ -21,8 +21,9 @@ class TaskController extends Controller
     public function getTask(Request $request)
     {
         $user = Auth::guard('api')->user();
-        if (!empty($user)) {
-            $task_data = Task::where('board_id', $request->board_id)->get();
+        $task_data = Task::where('board_id', $request->board_id)->get();
+
+        if (!count($task_data) == 0) {
             return response()->json([
                 'data' => $task_data,
                 'status' => true,
@@ -30,7 +31,7 @@ class TaskController extends Controller
             ], 200);
         } else {
             return response()->json([
-                'data' => [],
+                'data' => '',
                 'status' => true,
                 'message' => 'Data not found.',
             ], 404);
@@ -45,11 +46,12 @@ class TaskController extends Controller
         //validate value
         $validated = Validator::make($request->all(), [
             'task' => 'required|string',
+            'description' => 'required|string',
             'board_id' => 'required|integer',
         ]);
         if ($validated->fails()) {
             return response()->json([
-                'data' => [],
+                'data' => '',
                 'status' => false,
                 'message' => 'Enter valid data.',
             ], 400);
@@ -81,7 +83,7 @@ class TaskController extends Controller
         } else {
             $this->task->deleteTask($data);
             return response()->json([
-                'data' => " ",
+                'data' => '',
                 'status' => true,
                 'message' => 'Data deleted successfully.',
             ], 200);
@@ -95,6 +97,7 @@ class TaskController extends Controller
         $validated = Validator::make($request->all(), [
             'task_id' => 'required|integer',
             'task' => 'required|string',
+            'description' => 'required|string',
             'board_id' => 'required|integer',
         ]);
 
@@ -115,7 +118,7 @@ class TaskController extends Controller
                 ], 200);
             } else {
                 return response()->json([
-                    'data' => $task_data,
+                    'data' => '',
                     'status' => true,
                     'message' => 'Data not found.',
                 ], 404);
