@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Task extends Model
 {
     use HasFactory;
-    protected $fillable = ['board_id', 'task', 'description', 'start_date', 'end_date'];
+    protected $fillable = ['board_id', 'task', 'description', 'task_start_at', 'task_end_at', 'task_final_at'];
 
     public $timestamps = [
         'created_at' => 'CURRENT_TIMESTAMP',

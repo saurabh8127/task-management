@@ -43,79 +43,76 @@ class BoardController extends Controller
         $user = Auth::guard('api')->user();
         //validate value
         $validated = Validator::make($request->all(), [
-            'name' => 'required|string',
+            'board_name' => 'required|string',
             'description' => 'required|string',
+            'board_start_at' => 'date',
+            'board_end_at' => 'date',
         ]);
+
         if ($validated->fails()) {
             return response()->json([
-                'data' => '',
+                'data' => $validated->errors()->all(),
                 'status' => false,
                 'message' => 'Eter valid data.',
             ], 400);
-        } else {
-
-            $data = [
-                'name' => $request->name,
-                'description' => $request->description,
-                'member' => $request->member,
-                'created_by' => $user->id,
-            ];
-            //Create Board Repository
-            $board_data = $this->board->addBoard($data);
-
-            return response()->json([
-                'data' => $board_data,
-                'status' => true,
-                'message' => 'Task added successfully.',
-            ], 200);
         }
+
+        $data = [
+            'board_name' => $request->board_name,
+            'description' => $request->description,
+            'board_end_at' => $request->board_end_at,
+            'board_start_at' => $request->board_start_at,
+            'created_by' => $user->id,
+        ];
+        //Create Board Repository
+        $board_data = $this->board->addBoard($data);
+
+        return response()->json([
+            'data' => $board_data,
+            'status' => true,
+            'message' => 'Task added successfully.',
+        ], 200);
     }
 
     //Delete board
-    public function delete(Request $request)
+    public function delete(Request $request, $id)
     {
-        $data = $request->all();
-        $validated = Validator::make($request->all(), [
-            'board_id' => 'required|integer',
-        ]);
-        if ($validated->fails()) {
-            return response()->json([
-                'data' => '',
-                'status' => false,
-                'message' => 'Task data not found. ',
-            ], 400);
-        } else {
-            //Delete Board Repository
-            $this->board->deleteBoard($data);
-            return response()->json([
-                'data' => '',
-                'status' => true,
-                'message' => 'Data deleted successfully.',
-            ], 200);
-        }
+        //Delete Board Repository
+        $response = $this->board->deleteBoard($id);
+        return response()->json([
+            'status' => $response,
+            'message' => 'Data deleted.',
+        ], 200);
+    }
+
+    public function show($id)
+    {
+        $board_data = $this->board->show($id);
+        return $board_data;
     }
 
     //edit task
-    public function edit(Request $request)
+    public function edit(Request $request, $id)
     {
         $user = Auth::guard('api')->user();
 
         $validated = Validator::make($request->all(), [
-            'board_id' => 'required|integer',
-            'name' => 'required|string',
+            'board_name' => 'required|string',
             'description' => 'required|string',
+            'board_start_at' => 'date',
+            'board_end_at' => 'date',
         ]);
 
         if ($validated->fails()) {
             return response()->json([
-                'data' => '',
+                'data' => $validated->errors()->all(),
                 'status' => false,
                 'massage' => 'Enter valid value',
             ], 400);
         }
 
         // if user has not created board
-        if (!$this->board->checkUserHasBoard($request->board_id)) {
+        if (!$this->board->checkUserHasBoard($id)) {
             return response()->json([
                 'status' => false,
                 'message' => 'Data Not Found OR Unauthorized Access!',
@@ -124,15 +121,14 @@ class BoardController extends Controller
         }
 
         $data = [
-            'board_id' => $request->board_id,
-            'name' => $request->name,
+            'board_name' => $request->board_name,
             'description' => $request->description,
-            'member' => $request->member,
+            'board_end_at' => $request->board_end_at,
+            'board_start_at' => $request->board_start_at,
             'created_by' => $user->id,
         ];
-
         //Edit Board Repository
-        $board_data = $this->board->editBoard($data);
+        $board_data = $this->board->editBoard($data, $id);
 
         if (!empty($board_data)) {
             return response()->json([

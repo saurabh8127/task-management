@@ -31,14 +31,16 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     //board api route
     Route::get('getBoard', [BoardController::class, 'getData']);
+    Route::get('showBoard/{id}', [BoardController::class, 'show']);
     Route::post('createBoard', [BoardController::class, 'create']);
-    Route::delete('deleteBoard', [BoardController::class, 'delete']);
-    Route::put('editBoard', [BoardController::class, 'edit']);
+    Route::delete('deleteBoard/{ids}', [BoardController::class, 'delete']);
+    Route::put('editBoard/{id}', [BoardController::class, 'edit']);
 
     //task api route
     Route::get('getTask', [TaskController::class, 'getTask']);
+    Route::get('showTask/{id}', [TaskController::class, 'show']);
     Route::post('createTask', [TaskController::class, 'create']);
-    Route::delete('deleteTask', [TaskController::class, 'delete']);
-    Route::put('editTask', [TaskController::class, 'edit']);
+    Route::delete('deleteTask/{id}', [TaskController::class, 'delete']);
+    Route::put('editTask/{id}', [TaskController::class, 'edit']);
 
 });

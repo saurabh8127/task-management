@@ -13,20 +13,37 @@ class BoardRepository
         return $board_data;
     }
 
-    public function deleteBoard($data)
+    public function show($id)
     {
-        $board_data = Board::where('id', $data['board_id'])->delete();
-        return $board_data;
+        //get board with task(using reletion)
+        $board = Board::find($id)->with('tasks')->get()->toArray()[0];
+        if ($board) {
+            return $board;
+        } else {
+            return [];
+        }
     }
 
-    public function editBoard($data)
+    public function deleteBoard($id)
     {
-        $board_data = Board::where('id', $data['board_id'])->first();
+        $board = Board::findOrFail($id);
+        if (!$board) {
+            return false;
+        }
+        $board->delete();
+        return true;
+
+    }
+
+    public function editBoard($data, $id)
+    {
+        $board_data = Board::where('id', $id)->first();
         if (!empty($board_data)) {
 
-            $board_data->name = $data['name'];
+            $board_data->board_name = $data['board_name'];
             $board_data->description = $data['description'];
-            $board_data->member = $data['member'];
+            $board_data->board_end_at = $data['board_end_at'];
+            $board_data->board_start_at = $data['board_start_at'];
             $board_data->created_by = $data['created_by'];
 
             $board_data->update();
@@ -37,6 +54,7 @@ class BoardRepository
 
     }
 
+    //check User Has Board
     public function checkUserHasBoard(int $boardId)
     {
         return Board::where([

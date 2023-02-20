@@ -19,8 +19,9 @@ return new class extends Migration
             $table->foreign('board_id')->references('id')->on('boards')->onDelete('cascade');
             $table->string('task');
             $table->string('description');
-            $table->dateTime('start_date')->nullable();
-            $table->dateTime('end_date')->nullable();
+            $table->dateTime('task_start_at');
+            $table->dateTime('task_end_at');
+            $table->dateTime('task_final_at')->nullable();
             $table->timestamps();
         });
     }
